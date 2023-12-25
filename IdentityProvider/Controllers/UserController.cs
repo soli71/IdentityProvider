@@ -19,6 +19,11 @@ namespace IdentityProvider.Controllers
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// Registers a user.
+        /// </summary>
+        /// <param name="dto">The registration data.</param>
+        /// <returns>The registration response.</returns>
         [HttpPost("register")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(ApiResult<RegisterResponse>), 200)]
