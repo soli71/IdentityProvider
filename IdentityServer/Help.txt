@@ -1,0 +1,28 @@
+﻿APPLICATIONDBCONTEXT
+
+add-migration inti -context Applicationdbcontext
+
+update-database -context Applicationdbcontext
+
+
+
+
+
+
+
+
+CONFIGURATIONDBCONTEXT
+
+add-migration inti -context Configurationdbcontext
+
+update-database -context Configurationdbcontext
+
+
+
+
+
+PERSISTEDGRANTDBCONTEXT
+
+ add-migration inti -context PersistedGrantDbContext
+
+ update-database -context PersistedGrantDbContext
