@@ -1,8 +1,8 @@
+using Duende.IdentityModel;
 using Duende.IdentityServer;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
 using Duende.IdentityServer.Models;
-using IdentityModel;
 
 namespace IdentityServer
 {

@@ -1,7 +1,6 @@
 using IdentityServer;
 using IdentityServer.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,10 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-Debugger.Launch();
 builder.Configuration.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
 var migrationsAssembly = typeof(Program).Assembly.GetName().Name;
 
@@ -43,11 +39,12 @@ var app = builder.Build();
 
 Initialize.Start(app);
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+app.UseStaticFiles();
 app.UseIdentityServer();
 app.UseHttpsRedirection();
 
@@ -55,4 +52,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapRazorPages().RequireAuthorization();
 app.Run();
