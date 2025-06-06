@@ -32,6 +32,9 @@ namespace IdentityServer
             new ApiScope(name: "api1", displayName: "My API")
             };
 
+        public static IEnumerable<ApiResource> ApiResources =>
+            [new ApiResource("api", "test api") { Scopes = { "api1" } }];
+
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
@@ -75,6 +78,7 @@ namespace IdentityServer
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
+                    "api1"
                 }
             }
             };
@@ -99,6 +103,7 @@ namespace IdentityServer
             InitializeClientData(app, context);
             InitializeApiScopes(context);
             InitializeIdentityResources(context);
+            InitializeApiResource(context);
         }
 
         private static void InitializeIdentityResources(ConfigurationDbContext context)
@@ -111,6 +116,16 @@ namespace IdentityServer
                 }
                 context.SaveChanges();
             }
+        }
+
+        private static void InitializeApiResource(ConfigurationDbContext context)
+        {
+            if (!context.ApiResources.Any())
+            {
+                foreach (var resource in Config.ApiResources)
+                    context.ApiResources.Add(resource.ToEntity());
+            }
+            context.SaveChanges();
         }
 
         private static void InitializeClientData(WebApplication app, ConfigurationDbContext context)
