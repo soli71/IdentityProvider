@@ -3,6 +3,8 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
 using Duende.IdentityServer.Models;
+using IdentityServer.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace IdentityServer
 {
@@ -43,7 +45,7 @@ namespace IdentityServer
                 // secret for authentication
                 ClientSecrets =
                 {
-                    new Secret("secret".Sha256())
+                    new Secret("secret".Sha512())
                 },
 
                 // scopes that client has access to
@@ -53,7 +55,7 @@ namespace IdentityServer
             new Client
             {
                 ClientId = "web",
-                ClientSecrets = { new Secret("secret".Sha256()) },
+                ClientSecrets = { new Secret("secret".Sha512()) },
 
                 AllowedGrantTypes = GrantTypes.Code,
 
@@ -63,14 +65,16 @@ namespace IdentityServer
                 // where to redirect to after logout
                 PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
 
-                AllowOfflineAccess = true,
+                AllowOfflineAccess = false,
+
+                RequireConsent = true,
+
+                RequirePkce=true,
 
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
-                    "verification",
-                    "api1"
                 }
             }
             };
@@ -82,6 +86,15 @@ namespace IdentityServer
         {
             using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+            if (!userManager.Users.Any())
+                userManager.CreateAsync(new User
+                {
+                    UserName = "admin",
+                    Email = "test@admin.com"
+                }, "Admin@1234").GetAwaiter().GetResult();
 
             InitializeClientData(app, context);
             InitializeApiScopes(context);
@@ -115,14 +128,8 @@ namespace IdentityServer
         {
             foreach (var client in clients)
             {
-                HashClientSecrets(client);
                 context.Clients.Add(client.ToEntity());
             }
-        }
-
-        private static void HashClientSecrets(Client client)
-        {
-            client.ClientSecrets.ToList().ForEach(c => c.Value = c.Value.ToSha256());
         }
 
         private static void InitializeApiScopes(ConfigurationDbContext context)
