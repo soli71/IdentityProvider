@@ -175,6 +175,24 @@ namespace IdentityProvider.Controllers
             await _dbcontext.SaveChangesAsync();
             return Ok(ApiResultHandler.Ok());
         }
+
+        /// <summary>
+        /// Deletes a user.
+        /// </summary>
+        /// <param name="id">The user identifier.</param>
+        /// <returns>The result of the operation.</returns>
+        [HttpDelete("delete")]
+        [ProducesResponseType(typeof(ApiResult), 200)]
+        public async Task<IActionResult> Delete([FromQuery] Guid id)
+        {
+            var customer = await _dbcontext.Users.FindAsync(id);
+            if (customer == null)
+                return BadRequest(ApiResultHandler.Failed("مشتری وجود ندارد"));
+
+            _dbcontext.Users.Remove(customer);
+            await _dbcontext.SaveChangesAsync();
+            return Ok(ApiResultHandler.Ok());
+        }
         private RegisterResponse InserConfirmation(User customer)
         {
             _dbcontext.Confirmations.RemoveRange(_dbcontext.Confirmations.Where(x => x.UserId == customer.Id && x.Type == ConfirmatonType.Mobile));
